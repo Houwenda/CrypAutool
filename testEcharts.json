@@ -87,6 +87,176 @@
       "name": "raw",
       "value": 1,
       "category": 0
+    },
+    {
+    "name": "unicode",
+    "value": 1,
+    "category": 12
+    },
+    {
+    "name": "unicode",
+    "value": 1,
+    "category": 12
+    },
+    {
+    "name": "base32",
+    "value": 1,
+    "category": 3
+    },
+    {
+    "name": "base16",
+    "value": 1,
+    "category": 4
+    },
+    {
+    "name": "unicode",
+    "value": 1,
+    "category": 12
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "Jsfuck",
+    "value": 1,
+    "category": 16
+    },
+    {
+    "name": "Brainfuck",
+    "value": 1,
+    "category": 17
+    },
+    {
+    "name": "polybius",
+    "value": 1,
+    "category": 18
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "unicode",
+    "value": 1,
+    "category": 12
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "unicode",
+    "value": 1,
+    "category": 12
+    },
+    {
+    "name": "atbash",
+    "value": 1,
+    "category": 15
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
+    },
+    {
+    "name": "ceasar",
+    "value": 1,
+    "category": 1
+    },
+    {
+    "name": "XXencode",
+    "value": 1,
+    "category": 13
+    },
+    {
+    "name": "UUencode",
+    "value": 1,
+    "category": 14
     }
   ],
   "links": [

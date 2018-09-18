@@ -509,9 +509,9 @@ QString decrypt12(QString cipher)
     for(int i=0;i<strlen(input);i++){
         if(input[i]=='&'&&input[i+1]=='#'&&input[i+2]!='x'){
             int n = 0;
-            n += (input[i+3]-'0')*100;
-            n += (input[i+4]-'0')*10;
-            n += (input[i+5]-'0');
+            n += (input[i+4]-'0')*100;
+            n += (input[i+5]-'0')*10;
+            n += (input[i+6]-'0');
             result.append(QChar(n));
         }
         else if(input[i]=='&'&&input[i+1]=='#'&&input[i+2]=='x'){
@@ -595,7 +595,7 @@ QString decrypt12(QString cipher)
     }
 
 
-    return QString(cipher);
+    return QString(result);
 }
 
 //md5爆破

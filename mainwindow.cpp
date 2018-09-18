@@ -31,10 +31,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->textEdit->append(QString("text"));
     //ui->textEdit->append(QString("test"));
     ui->textEdit->document()->setMaximumBlockCount(50);//最多显示10行
-    ui->textEdit_2->document()->setMaximumBlockCount(200);
+    ui->textEdit_2->document()->setMaximumBlockCount(500);
     //设定定时器，每秒触发一次事件，调整TextEdit光标位置
     QTimer *CurrentTime = new QTimer(this);
-    CurrentTime->start(1000);
+    CurrentTime->start(10000);
     connect(CurrentTime,&QTimer::timeout,[=](){
             //保持编辑器光标在最后一行
             QTextCursor cursor=ui->textEdit->textCursor();
@@ -63,11 +63,8 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug()<<"open database succeeded"<<endl;
     }
 
-
-
     //drawCharts函数测试
-    drawCharts(0,0,0);
-
+    //drawCharts(0,0,0);
 }
 
 MainWindow::~MainWindow()
@@ -196,7 +193,7 @@ bool MainWindow::requestQuipquip(void){
 }
 
 //画图表
-void MainWindow::drawCharts(int recurse_count,int type1,int type2){
+void MainWindow::drawCharts(QString ans,int type1,int type2){
     QFile file("C:\\Users\\houwd\\Desktop\\programming\\Qt5\\classic_cryptography\\testEcharts.json");
     if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
         qDebug()<<"json open failed"<<endl;
@@ -230,7 +227,7 @@ void MainWindow::drawCharts(int recurse_count,int type1,int type2){
                 }
             }
             links = text.mid(i+j+5,k-6);
-            qDebug()<<links;
+            //qDebug()<<links;
             break;
         }
     }
@@ -249,14 +246,14 @@ void MainWindow::drawCharts(int recurse_count,int type1,int type2){
 */
 
     if(type2<10){
-        nodes = nodes + ",\n    {\n    \"name\": \"test\",\n    \"value\": 1,\n    \"category\": " + QChar(type2+'0') + "\n    }\n";
+        nodes = nodes + ",\n    {\n    \"name\": \""+ans+"\",\n    \"value\": 1,\n    \"category\": " + QChar(type2+'0') + "\n    }\n";
     }
     else{
         QString tmp = QChar(type2/10+'0');
         tmp += QChar((type2-(type2/10)*10)+'0');
-        nodes = nodes +",\n    {\n    \"name\": \"test\",\n    \"value\": 1,\n    \"category\": " + tmp + "\n    }\n";
+        nodes = nodes +",\n    {\n    \"name\": \""+ans+"\",\n    \"value\": 1,\n    \"category\": " + tmp + "\n    }\n";
     }
-//写入测试
+//写入
     //QFile file1("outTest.txt");
     if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
         qDebug()<<"out file creating failed"<<endl;
@@ -287,37 +284,37 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //sha256
     if(input.length()==64){
         printText("sha256",1);
-        drawCharts(0,type1,8);
+        drawCharts("sha256",type1,8);
     }
     //md5(32)
     else if(input.length()==32){
         printText("md5",1);
-        drawCharts(0,type1,5);
+        drawCharts("md5",type1,5);
     }
     //md5(16)
     else if(input.length()==16){
         printText("md5",1);
-        drawCharts(0,type1,5);
+        drawCharts("md5",type1,5);
     }
     //sha1
     else if(input.length()==40){
         printText("sha1",1);
-        drawCharts(0,type1,6);
+        drawCharts("sha1",type1,6);
     }
     //sha244
     else if(input.length()==56){
         printText("sha244",1);
-        drawCharts(0,type1,7);
+        drawCharts("sha244",type1,7);
     }
     //sha384
     else if(input.length()==96){
         printText("sha384",1);
-        drawCharts(0,type1,9);
+        drawCharts("sha384",type1,9);
     }
     //sha512
     else if(input.length()==128){
         printText("sha512",1);
-        drawCharts(0,type1,10);
+        drawCharts("sha512",type1,10);
     }
     else{
         printText("非md5",1);
@@ -350,7 +347,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,2);
+        drawCharts("base64",type1,2);
         staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else if(((input[input.length()-2]>='a'&&input[input.length()-2]<='z')||(input[input.length()-2]>='A'&&input[input.length()-2]<='Z')||(input[input.length()-2]>='0'&&input[input.length()-2]<='9'))&&input[input.length()-1]=='='&&flag==0){
@@ -368,7 +365,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,2);
+        drawCharts("base64",type1,2);
         staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else if(((input[input.length()-2]>='a'&&input[input.length()-2]<='z')||(input[input.length()-2]>='A'&&input[input.length()-2]<='Z')||(input[input.length()-2]>='0'&&input[input.length()-2]<='9'))&&((input[input.length()-1]>='a'&&input[input.length()-1]<='z')||(input[input.length()-1]>='A'&&input[input.length()-1]<='Z')||(input[input.length()-1]>='0'&&input[input.length()-1]<='9'))&&flag==0){
@@ -386,7 +383,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,2);
+        drawCharts("base64",type1,2);
         staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else{
@@ -425,7 +422,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
             str = str + "\r\n";
             out<<str;
             file.close();
-            drawCharts(0,type1,3);
+            drawCharts("base32",type1,3);
             staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,3);
         }
         else{
@@ -447,7 +444,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,3);
+        drawCharts("base32",type1,3);
         staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,3);
     }
     else{
@@ -478,7 +475,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,4);
+        drawCharts("base16",type1,4);
         staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,4);
     }
     else{
@@ -504,7 +501,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,12);
+        drawCharts("unicode",type1,12);
         staticsAnalysis(result,recurse_count+1,12);
     }
     else{
@@ -515,7 +512,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //atbash
     printText("atbash",1);
     result = decrypt3(input);
-    drawCharts(0,type1,15);
+    drawCharts("atbash",type1,15);
     staticsAnalysis(result,recurse_count+1,15);
     printText(result,2);
 
@@ -530,7 +527,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     }
     if(flag==0){
         printText("jsfuck",1);
-        drawCharts(0,type1,16);
+        drawCharts("Jsfuck",type1,16);
     }
     else{
         printText("非jsfuck",1);
@@ -547,7 +544,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     }
     if(flag==0){
         printText("brainfuck",1);
-        drawCharts(0,type1,17);
+        drawCharts("Brainfuck",type1,17);
     }
     else{
         printText("非brainfuck",1);
@@ -574,7 +571,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         str = str + "\r\n";
         out<<str;
         file.close();
-        drawCharts(0,type1,11);
+        drawCharts("urlencode",type1,11);
         staticsAnalysis(result,recurse_count+1,11);
     }
     else{
@@ -596,7 +593,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         char* in = input.toLatin1().data();
         result = encrypt5(in);
         printText(result,2);
-        drawCharts(0,type1,18);
+        drawCharts("polybius",type1,18);
     }
 
     //ceasar
@@ -606,7 +603,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
         printText(result,2);
         //qDebug()<<result;
     }
-    drawCharts(0,type1,1);
+    drawCharts("ceasar",type1,1);
 
     //XXencode 字母数字+-
     flag = 0;
@@ -622,18 +619,34 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     }
     else{
         printText("尝试XXencode",1);
-        drawCharts(0,type1,13);
+        drawCharts("XXencode",type1,13);
     }
 
     //UUencode 可打印字符
     printText("尝试UUencode",1);
-    drawCharts(0,type1,14);
+    drawCharts("UUencode",type1,14);
 
 }
 
 //按下按钮
 void MainWindow::on_pushButton_clicked()
 {
+    QFile file("C:\\Users\\houwd\\Desktop\\programming\\Qt5\\classic_cryptography\\raw_json.txt");
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        qDebug()<<"raw json reading failed";
+        return ;
+    }
+    QTextStream in(&file);
+    QString raw = in.readAll();
+    file.close();
+    QFile file1("C:\\Users\\houwd\\Desktop\\programming\\Qt5\\classic_cryptography\\testEcharts.json");
+    if(!file1.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug()<<"json initializing failed"<<endl;
+        return ;
+    }
+    QTextStream out(&file1);
+    out<<raw;
+    file1.close();
     //忽略空输入
     if(ui->lineEdit->text().length()==0) return;
     //清空输出

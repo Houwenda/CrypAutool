@@ -9,6 +9,7 @@ extern QString deescapeURL(const char* URL);
 extern int base32_decode(const char * base32, unsigned char * dedata);
 extern int base16_decode(const char * base16, unsigned char * dedata);
 extern QString decrypt3(QString input);
+extern QString encrypt5(char* str);
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->textEdit_2->setFont(QFont("微软雅黑",10));
     //ui->textEdit->append(QString("text"));
     //ui->textEdit->append(QString("test"));
-    ui->textEdit->document()->setMaximumBlockCount(10);//最多显示10行
+    ui->textEdit->document()->setMaximumBlockCount(50);//最多显示10行
     ui->textEdit_2->document()->setMaximumBlockCount(200);
     //设定定时器，每秒触发一次事件，调整TextEdit光标位置
     QTimer *CurrentTime = new QTimer(this);
@@ -61,6 +62,12 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         qDebug()<<"open database succeeded"<<endl;
     }
+
+
+
+    //drawCharts函数测试
+    drawCharts(0,0,0);
+
 }
 
 MainWindow::~MainWindow()
@@ -188,12 +195,81 @@ bool MainWindow::requestQuipquip(void){
     return true;
 }
 
+//画图表
 void MainWindow::drawCharts(int recurse_count,int type1,int type2){
+    QFile file("C:\\Users\\houwd\\Desktop\\programming\\Qt5\\classic_cryptography\\testEcharts.json");
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        qDebug()<<"json open failed"<<endl;
+        return ;
+    }
+    QTextStream in(&file);
+    QString text;
+    text = in.readAll();
+    //qDebug()<<text;
+    int i;
+    int j;
+    QString categories;
+    QString nodes;
+    QString links;
+    for(i=0;i<text.length();i++){
+        if(text[i]=='n'&&text[i+1]=='o'&&text[i+2]=='d'&&text[i+3]=='e'&&text[i+4]=='s'){
+            categories = text.mid(0,i-1);
+            //qDebug()<<categories;
+            for(j=0;j<text.length()-i;j++){
+                if(text[i+j]==']'){
+                    break;
+                }
+            }
+            nodes = text.mid(i-1,j-2);
+            //qDebug()<<nodes;
+            //links = text.mid(i+j+3,text.length()-i-j-7);
+            int k;
+            for(k=0;k<text.length()-i-j-1;k++){
+                if(text[i+j+1+k]==']'){
+                    break;
+                }
+            }
+            links = text.mid(i+j+5,k-6);
+            qDebug()<<links;
+            break;
+        }
+    }
+    file.close();
+    //text = categories + nodes + "],\n" + links + "\n  ]\n}";
+
+/*测试提取完整性
+    QFile file1("outTest.txt");
+    if(!file1.open(QIODevice::ReadWrite | QIODevice::Text)){
+        qDebug()<<"out file creating failed"<<endl;
+        return ;
+    }
+    QTextStream out(&file1);
+    out<<categories+nodes+"],\n"+links+"]\n}";
+    file1.close();
+*/
+
+    if(type2<10){
+        nodes = nodes + ",\n    {\n    \"name\": \"test\",\n    \"value\": 1,\n    \"category\": " + QChar(type2+'0') + "\n    }\n";
+    }
+    else{
+        QString tmp = QChar(type2/10+'0');
+        tmp += QChar((type2-(type2/10)*10)+'0');
+        nodes = nodes +",\n    {\n    \"name\": \"test\",\n    \"value\": 1,\n    \"category\": " + tmp + "\n    }\n";
+    }
+//写入测试
+    //QFile file1("outTest.txt");
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        qDebug()<<"out file creating failed"<<endl;
+        return ;
+    }
+    QTextStream out(&file);
+    out<<categories+nodes+"  ],\n  "+links+"  ]\n}";
+    file.close();
 
 }
 
 //特征识别
-void MainWindow::staticsAnalysis(QString input,int recurse_count){
+void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
 
     if(recurse_count==3) return;
     else{}
@@ -211,30 +287,37 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     //sha256
     if(input.length()==64){
         printText("sha256",1);
+        drawCharts(0,type1,8);
     }
     //md5(32)
     else if(input.length()==32){
         printText("md5",1);
+        drawCharts(0,type1,5);
     }
     //md5(16)
     else if(input.length()==16){
         printText("md5",1);
+        drawCharts(0,type1,5);
     }
     //sha1
     else if(input.length()==40){
         printText("sha1",1);
+        drawCharts(0,type1,6);
     }
     //sha244
     else if(input.length()==56){
         printText("sha244",1);
+        drawCharts(0,type1,7);
     }
     //sha384
     else if(input.length()==96){
         printText("sha384",1);
+        drawCharts(0,type1,9);
     }
     //sha512
     else if(input.length()==128){
         printText("sha512",1);
+        drawCharts(0,type1,10);
     }
     else{
         printText("非md5",1);
@@ -267,7 +350,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+        drawCharts(0,type1,2);
+        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else if(((input[input.length()-2]>='a'&&input[input.length()-2]<='z')||(input[input.length()-2]>='A'&&input[input.length()-2]<='Z')||(input[input.length()-2]>='0'&&input[input.length()-2]<='9'))&&input[input.length()-1]=='='&&flag==0){
         printText("base64",1);
@@ -284,7 +368,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+        drawCharts(0,type1,2);
+        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else if(((input[input.length()-2]>='a'&&input[input.length()-2]<='z')||(input[input.length()-2]>='A'&&input[input.length()-2]<='Z')||(input[input.length()-2]>='0'&&input[input.length()-2]<='9'))&&((input[input.length()-1]>='a'&&input[input.length()-1]<='z')||(input[input.length()-1]>='A'&&input[input.length()-1]<='Z')||(input[input.length()-1]>='0'&&input[input.length()-1]<='9'))&&flag==0){
         printText("base64",1);
@@ -301,7 +386,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+        drawCharts(0,type1,2);
+        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,2);
     }
     else{
         printText("非base64",1);
@@ -339,7 +425,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
             str = str + "\r\n";
             out<<str;
             file.close();
-            staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+            drawCharts(0,type1,3);
+            staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,3);
         }
         else{
             printText("非base32",1);
@@ -360,7 +447,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+        drawCharts(0,type1,3);
+        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,3);
     }
     else{
         printText("非base32",1);
@@ -390,7 +478,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1);
+        drawCharts(0,type1,4);
+        staticsAnalysis(QString(QLatin1String(dedata)),recurse_count+1,4);
     }
     else{
         printText("非base16",1);
@@ -415,7 +504,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(result,recurse_count+1);
+        drawCharts(0,type1,12);
+        staticsAnalysis(result,recurse_count+1,12);
     }
     else{
         printText("非Unicode",1);
@@ -425,6 +515,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     //atbash
     printText("atbash",1);
     result = decrypt3(input);
+    drawCharts(0,type1,15);
+    staticsAnalysis(result,recurse_count+1,15);
     printText(result,2);
 
     //jsfuck
@@ -438,6 +530,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     }
     if(flag==0){
         printText("jsfuck",1);
+        drawCharts(0,type1,16);
     }
     else{
         printText("非jsfuck",1);
@@ -454,6 +547,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     }
     if(flag==0){
         printText("brainfuck",1);
+        drawCharts(0,type1,17);
     }
     else{
         printText("非brainfuck",1);
@@ -480,7 +574,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         str = str + "\r\n";
         out<<str;
         file.close();
-        staticsAnalysis(result,recurse_count+1);
+        drawCharts(0,type1,11);
+        staticsAnalysis(result,recurse_count+1,11);
     }
     else{
         printText("非Urlencode",1);
@@ -488,7 +583,21 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     //qDebug()<<result;
 
     //vigenere
-
+    //polybius
+    flag = 0;
+    for(int i=0;i<input.length();i++){
+        if(input[i]>-'0'&&input[i]<='9'){}
+        else{
+            flag = 1;
+            break;
+        }
+    }
+    if(flag==0){
+        char* in = input.toLatin1().data();
+        result = encrypt5(in);
+        printText(result,2);
+        drawCharts(0,type1,18);
+    }
 
     //ceasar
     printText("Ceasar cipher",1);
@@ -497,7 +606,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         printText(result,2);
         //qDebug()<<result;
     }
-
+    drawCharts(0,type1,1);
 
     //XXencode 字母数字+-
     flag = 0;
@@ -513,11 +622,12 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
     }
     else{
         printText("尝试XXencode",1);
+        drawCharts(0,type1,13);
     }
 
     //UUencode 可打印字符
     printText("尝试UUencode",1);
-
+    drawCharts(0,type1,14);
 
 }
 
@@ -533,6 +643,6 @@ void MainWindow::on_pushButton_clicked()
     //if(requestQuipquip())   qDebug()<<"quipquip analysis"<<endl;
     //特征检测
     QString input = ui->lineEdit->text();
-    staticsAnalysis(input,0);
+    staticsAnalysis(input,0,0);
 
 }

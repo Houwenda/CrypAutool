@@ -156,6 +156,130 @@ int rec(int k, int m) {
     }
     return j;
 }
+
+
+//polybius方阵
+QString encrypt5(char* str)
+{
+    int a[50];
+    char b[50];
+    int len=strlen(str);
+    //string str=cipher;
+    int num=0;
+    for(int i=0;i<len;i+=2)
+    {
+        int n=0;
+        n=(str[i]-'0')*10;
+        n+=str[i+1]-'0';
+        a[num]=n;
+        num++;
+    }
+    for(int i=0;i<num;i++)
+    {
+        if(a[i]==11)
+        {
+            b[i]='A';
+        }
+        if(a[i]==12)
+        {
+            b[i]='B';
+        }
+        if(a[i]==13)
+        {
+            b[i]='C';
+        }
+        if(a[i]==14)
+        {
+            b[i]='D';
+        }
+        if(a[i]==15)
+        {
+            b[i]='E';
+        }
+        if(a[i]==21)
+        {
+            b[i]='F';
+        }
+        if(a[i]==22)
+        {
+            b[i]='G';
+        }
+        if(a[i]==23)
+        {
+            b[i]='H';
+        }
+        if(a[i]==24)
+        {
+            b[i]='I';
+        }
+        if(a[i]==25)
+        {
+            b[i]='K';
+        }
+        if(a[i]==31)
+        {
+            b[i]='L';
+        }
+        if(a[i]==32)
+        {
+            b[i]='M';
+        }
+        if(a[i]==33)
+        {
+            b[i]='N';
+        }
+        if(a[i]==34)
+        {
+            b[i]='O';
+        }
+        if(a[i]==35)
+        {
+            b[i]='P';
+        }
+        if(a[i]==41)
+        {
+            b[i]='Q';
+        }
+        if(a[i]==42)
+        {
+            b[i]='R';
+        }
+        if(a[i]==43)
+        {
+            b[i]='S';
+        }
+        if(a[i]==44)
+        {
+            b[i]='T';
+        }
+        if(a[i]==45)
+        {
+            b[i]='U';
+        }
+        if(a[i]==51)
+        {
+            b[i]='V';
+        }
+        if(a[i]==52)
+        {
+            b[i]='W';
+        }
+        if(a[i]==53)
+        {
+            b[i]='X';
+        }
+        if(a[i]==54)
+        {
+            b[i]='Y';
+        }
+        if(a[i]==55)
+        {
+            b[i]='Z';
+        }
+    }
+    return QString(QLatin1String(b));
+}
+
 QString decrypt7(QString input, int k1, int k2)
 {
     char* cipher= input.toLatin1().data();

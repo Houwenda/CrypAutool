@@ -187,6 +187,11 @@ bool MainWindow::requestQuipquip(void){
     return true;
 }
 
+void MainWindow::drawCharts(int recurse_count,int type){
+
+}
+
+
 //特征识别
 void MainWindow::staticsAnalysis(QString input,int recurse_count){
 
@@ -461,6 +466,16 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         char* url = input.toLatin1().data();
         result = deescapeURL(url);
         printText(result,2);
+        QFile file("result.txt");
+        QString str = result;
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append)){
+            qDebug()<<"Open failed"<< endl;
+        }
+        QTextStream out(&file);
+        str = str + "\r\n";
+        out<<str;
+        file.close();
+        staticsAnalysis(result,recurse_count+1);
     }
     else{
         printText("非Urlencode",1);

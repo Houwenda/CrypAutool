@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<script src="jquery.min.js"></script>
+
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+   </head>
+   <body style="height: 80%; margin: 0">
+       <div id="container" style="height: 100%;width: 100%"></div>
+       <script src="echarts.js"></script>
+       <script type="text/javascript">
+
+$(function(){
+showcharts();
+setInterval(function(){
+showcharts();
+}, 3000);
+});
+
+
+function showcharts(){
+  var dom = document.getElementById("container");
+  var myChart = echarts.init(dom,'dark');
+  var app = {};
+  option = null;
+  // myChart.showLoading();
+  myChart.hideLoading();
+  $.getJSON('webkit-dep.json', function (webkitDep) {
+      myChart.hideLoading();
+
+      option = {
+          legend: {
+              data: ['HTMLElement', 'WebGL', 'SVG', 'CSS', 'Other']
+          },
+          series: [{
+              type: 'graph',
+              layout: 'force',
+              animation: false,
+              label: {
+                  normal: {
+                      position: 'right',
+                      formatter: '{b}'
+                  }
+              },
+              draggable: true,
+              data: webkitDep.nodes.map(function (node, idx) {
+                  node.id = idx;
+                  return node;
+              }),
+              categories: webkitDep.categories,
+              force: {
+                  // initLayout: 'circular'
+                  // repulsion: 20,
+                  edgeLength: 5,
+                  repulsion: 20,
+                  gravity: 0.2
+              },
+              edges: webkitDep.links
+          }]
+      };
+
+      myChart.setOption(option);
+  });;
+  if (option && typeof option === "object") {
+      myChart.setOption(option, true);
+  }
+
+}
+
+
+
+
+
+
+
+
+       </script>
+   </body>
+</html>

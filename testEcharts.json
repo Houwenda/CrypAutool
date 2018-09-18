@@ -1,0 +1,138 @@
+{
+  "type": "force",
+  "categories": [
+    {
+      "name": "seasar",
+      "keyword": {},
+      "base": "HTMLElement"
+    },
+    {
+      "name": "fence",
+      "keyword": {},
+      "base": "WebGLRenderingContext"
+    },
+    {
+      "name": "rot",
+      "keyword": {},
+      "base": "SVGElement"
+    },
+    {
+      "name": "base",
+      "keyword": {},
+      "base": "CSSRule"
+    },
+    {
+      "name": "Other",
+      "keyword": {}
+    }
+  ],
+  "nodes": [
+    {
+      "name": "seasar0",
+      "value": 1,
+      "category": 0
+    },
+    {
+      "name": "seasar1",
+      "value": 1,
+      "category": 0
+    },
+    {
+      "name": "seasar2",
+      "value": 1,
+      "category": 0
+    },
+    {
+      "name": "seasar3",
+      "value": 1,
+      "category": 0
+    },
+    {
+      "name": "fence4",
+      "value": 1,
+      "category": 1
+    },
+    {
+      "name": "fence5",
+      "value": 1,
+      "category": 1
+    },
+    {
+      "name": "fence6",
+      "value": 1,
+      "category": 1
+    },
+    {
+      "name": "fence7",
+      "value": 1,
+      "category": 1
+    },
+    {
+      "name": "rot8",
+      "value": 1,
+      "category": 2
+    },
+    {
+      "name": "rot9",
+      "value": 1,
+      "category": 2
+    },
+    {
+      "name": "rot10",
+      "value": 1,
+      "category": 2
+    },
+    {
+      "name": "rot11",
+      "value": 1,
+      "category": 2
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "target": 1
+    },
+    {
+      "source": 0,
+      "target": 2
+    },
+    {
+      "source": 0,
+      "target": 3
+    },
+    {
+      "source": 0,
+      "target": 4
+    },
+    {
+      "source": 4,
+      "target": 5
+    },
+    {
+      "source": 5,
+      "target": 6
+    },
+    {
+      "source": 5,
+      "target": 7
+    },
+    {
+      "source": 7,
+      "target": 8
+    },
+    {
+      "source": 8,
+      "target": 9
+    },
+    {
+      "source": 8,
+      "target": 10
+    },
+    {
+      "source": 8,
+      "target": 11
+    }
+
+  ]
+}

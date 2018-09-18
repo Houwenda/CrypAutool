@@ -2,27 +2,71 @@
   "type": "force",
   "categories": [
     {
-      "name": "seasar",
+      "name": "source",
       "keyword": {},
       "base": "HTMLElement"
     },
     {
-      "name": "fence",
+      "name": "Ceasar Cipher",
       "keyword": {},
       "base": "WebGLRenderingContext"
     },
     {
-      "name": "rot",
+      "name": "Base64",
       "keyword": {},
       "base": "SVGElement"
     },
     {
-      "name": "base",
+      "name": "Base32",
       "keyword": {},
       "base": "CSSRule"
     },
     {
-      "name": "Other",
+      "name": "Base16",
+      "keyword": {}
+    },
+    {
+      "name": "md5",
+      "keyword": {}
+    },
+    {
+      "name": "sha1",
+      "keyword": {}
+    },
+    {
+      "name": "sha244",
+      "keyword": {}
+    },
+    {
+      "name": "sha256",
+      "keyword": {}
+    },
+    {
+      "name": "sha384",
+      "keyword": {}
+    },
+    {
+      "name": "sha512",
+      "keyword": {}
+    },
+    {
+      "name": "UrlEncode",
+      "keyword": {}
+    },
+    {
+      "name": "Unicode",
+      "keyword": {}
+    },
+    {
+      "name": "XXencode",
+      "keyword": {}
+    },
+    {
+      "name": "UUencode",
+      "keyword": {}
+    },
+    {
+      "name": "Atbash",
       "keyword": {}
     }
   ],

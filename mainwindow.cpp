@@ -8,6 +8,7 @@ extern QString decrypt11(QString text);
 extern QString deescapeURL(const char* URL);
 extern int base32_decode(const char * base32, unsigned char * dedata);
 extern int base16_decode(const char * base16, unsigned char * dedata);
+extern QString decrypt3(QString input);
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     view.setParent(ui->widget);
     view.setFixedHeight(800);
     view.setFixedWidth(700);
-    view.setUrl(QUrl("file:///C:/Users/houwd/Desktop/programming/Qt5/classic_cryptography/graph-webkit-dep.html"));
+    view.setUrl(QUrl("file:///C:/Users/houwd/Desktop/programming/Qt5/classic_cryptography/testEcharts.html"));
     view.show();    
     ui->lineEdit->setFont(QFont("微软雅黑",14));
     ui->pushButton->setFont(QFont("微软雅黑",14,QFont::Bold));
@@ -187,10 +188,9 @@ bool MainWindow::requestQuipquip(void){
     return true;
 }
 
-void MainWindow::drawCharts(int recurse_count,int type){
+void MainWindow::drawCharts(int recurse_count,int type1,int type2){
 
 }
-
 
 //特征识别
 void MainWindow::staticsAnalysis(QString input,int recurse_count){
@@ -421,6 +421,11 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count){
         printText("非Unicode",1);
     }
     //qDebug()<<result;
+
+    //atbash
+    printText("atbash",1);
+    result = decrypt3(input);
+    printText(result,2);
 
     //jsfuck
     flag = 0;

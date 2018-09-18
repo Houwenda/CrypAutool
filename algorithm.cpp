@@ -46,7 +46,7 @@ QString ceasar_cipher(QString input,int k)
             text[i] = A[m];
         }
         else{
-            text[i] = ' ';
+            text[i] =cipher[i];
         }
     }
 
@@ -134,10 +134,11 @@ QString decrypt3(QString input)
         {
             t = t + 25 - (t - 97) * 2;
         }
-        else//n~z
+        else if(t >= 110 && t <= 122)
         {
             t = t - 25 + (122 - t) * 2;
         }
+        text[i] = t;
     }
     return QString(QLatin1String(text));
 }

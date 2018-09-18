@@ -30,7 +30,7 @@ private:
     bool writeQuipquip(QString str);
     bool requestQuipquip(void);
     void staticsAnalysis(QString input,int recurse_count);
-    void drawCharts(int recurse_count,int type);
+    void drawCharts(int recurse_count,int type1,int type2);
     QSqlDatabase database;
 };
 

@@ -10,11 +10,14 @@ extern int base32_decode(const char * base32, unsigned char * dedata);
 extern int base16_decode(const char * base16, unsigned char * dedata);
 extern QString decrypt3(QString input);
 extern QString encrypt5(char* str);
+extern QString zhalan(char *cipher);
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setFixedSize(this->width(),this->height());
+    setWindowTitle("CrypAutool");
     view.setParent(ui->widget);
     view.setFixedHeight(800);
     view.setFixedWidth(700);
@@ -118,7 +121,7 @@ bool MainWindow::writeQuipquip(QString str){
 
     return true;
 }
-//槽函数 接收服务器消息
+//接收quipquip消息
 void MainWindow::replyFinished(QNetworkReply *reply)
 {
     qDebug()<<"data received"<<endl;
@@ -210,6 +213,66 @@ bool MainWindow::requestQuipquip(void){
     return true;
 }
 
+//接收brainfuck消息
+void MainWindow::replyFinished1(QNetworkReply *reply)
+{
+    qDebug()<<"data received"<<endl;
+    // 获取响应信息
+    QByteArray bytes = reply->readAll();
+    //qDebug()<<bytes<<endl;
+
+    int i;
+    for(i=0;i<bytes.length();i++){
+        if(bytes[i]=='r'&&bytes[i+1]=='o'&&bytes[i+2]=='w'&&bytes[i+3]=='s') break;
+    }
+    int j;
+    for(j=0;j<bytes.length()-i-9;j++){
+        if(bytes[i+j+9]=='<'&&bytes[i+j+10]=='/'&&bytes[i+j+11]=='t') break;
+    }
+    QString result = bytes.mid(i+10,j-1);
+    //qDebug()<<result;
+    printText(result,2);
+
+}
+
+//发送请求brainfuck
+void MainWindow::requestBrainfuck(QString input){
+
+    QString baseUrl = "http://tool.bugku.com/brainfuck/";
+    QUrl url(baseUrl);
+
+    QString cipher = "input=";
+    QString tmp_str;
+    for(int i=0;i<input.length();i++){
+        if(input[i]=='>') tmp_str.append("%3E");
+        else if(input[i]=='<') tmp_str.append("%3C");
+        else if(input[i]=='+') tmp_str.append("%2B");
+        else if(input[i]==',') tmp_str.append("%2C");
+        else if(input[i]=='[') tmp_str.append("%5B");
+        else if(input[i]==']') tmp_str.append("%5d");
+        else if(input[i]==' ') tmp_str.append("+");
+        else tmp_str.append(input[i]);
+    }
+    cipher.append(tmp_str);
+    cipher.append("&do=Brainfuck+to+Text");
+    QByteArray postData;
+    postData.append(cipher);
+
+    QNetworkRequest request;
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
+    //request.setRawHeader("Origin","https://quipquip.com");
+    request.setRawHeader("Referer","http://tool.bugku.com/brainfuck/");
+    request.setUrl(url);
+
+    //QNetworkAccessManager manager();
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished1(QNetworkReply *)));
+
+    manager->post(request,postData);
+    qDebug()<<"data posted"<<endl;
+
+}
+
 //画图表
 void MainWindow::drawCharts(int result_count,QString ans,int type1,int type2){
     QFile file("C:\\Users\\houwd\\Desktop\\programming\\Qt5\\classic_cryptography\\testEcharts.json");
@@ -272,7 +335,7 @@ void MainWindow::drawCharts(int result_count,QString ans,int type1,int type2){
         nodes = nodes +",\n    {\n    \"name\": \""+ans+"\",\n    \"value\": 1,\n    \"category\": " + tmp + "\n    }\n";
     }
     //设置links
-    qDebug()<<"start setting links";
+    //qDebug()<<"start setting links";
     int count = 0;//节点总数
     for(i=0;i<nodes.length();i++){
         if(nodes[i]=='n'&&nodes[i+1]=='a'&&nodes[i+2]=='m'&&nodes[i+3]=='e') count++;
@@ -557,7 +620,8 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
             count++;
         }
     }
-    if(count>=input.length()/7){
+    qDebug()<<"count:"<<count;
+    if(count>=input.length()/7.0){
         printText("unicode",1);
         result = decrypt12(input);
         QFile file("result.txt");
@@ -579,12 +643,24 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //qDebug()<<result;
 
     //atbash
-    printText("atbash",1);
-    result = decrypt3(input);
-    drawCharts(result_count,"atbash",type1,15);
-    result_count++;
-    staticsAnalysis(result,recurse_count+1,15);
-    printText(result,2);
+    flag = 0;
+    for(int i=0;i<input.length();i++){
+        if((input[i]>='a'&&input[i]<='z')||(input[i]>='A'&&input[i]<='Z')){
+            flag = 1;
+            break;
+        }
+    }
+    if(flag==1){
+        printText("atbash",1);
+        result = decrypt3(input);
+        printText(result,2);
+        drawCharts(result_count,"atbash",type1,15);
+        result_count++;
+        staticsAnalysis(result,recurse_count+1,15);
+    }
+    else{
+        printText("非atbash",1);
+    }
 
     //jsfuck
     flag = 0;
@@ -607,7 +683,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //brainfuck
     flag = 0;
     for(int i=0;i<input.length();i++){
-        if(input[i]=='>'||input[i]=='<'||input[i]=='+'||input[i]=='-'||input[i]=='.'||input[i]==','||input[i]=='['||input[i]==']'){}
+        if(input[i]=='>'||input[i]=='<'||input[i]=='+'||input[i]=='-'||input[i]=='.'||input[i]==','||input[i]=='['||input[i]==']'||input[i]==' '){}
         else{
             flag = 1;
             break;
@@ -615,8 +691,16 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     }
     if(flag==0){
         printText("brainfuck",1);
+        requestBrainfuck(input);
         drawCharts(result_count,"Brainfuck",type1,17);
         result_count++;
+        result = "";
+        QString res = ui->textEdit_2->toPlainText();
+        for(int i=res.length()-1;i>=0;i--){
+            if(res[i-1]!='\n') result = res[i] + result;
+        }
+        //qDebug()<<result;
+        staticsAnalysis(result,recurse_count+1,17);
     }
     else{
         printText("非brainfuck",1);
@@ -653,6 +737,21 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //qDebug()<<result;
 
     //vigenere
+    //fence cipher
+    printText("fence",1);
+    result = zhalan(input.toLatin1().data());
+    //qDebug()<<result;
+    QFile file("fence.txt");
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug()<<"Open failed"<< endl;
+    }
+    QTextStream out(&file);
+    out<<result;
+    file.close();
+    drawCharts(result_count,"fence",type1,19);
+    result_count++;
+
+
     //polybius
     flag = 0;
     for(int i=0;i<input.length();i++){
@@ -671,14 +770,26 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     }
 
     //ceasar
-    printText("Ceasar cipher",1);
-    for(int i=1;i<26;i++){
-        result = ceasar_cipher(input,i);
-        printText(result,2);
-        //qDebug()<<result;
+    flag = 0;
+    for(int i=0;i<input.length();i++){
+        if((input[i]>='a'&&input[i]<='z')||(input[i]>='A'&&input[i]<='Z')){
+            flag = 1;
+            break;
+        }
     }
-    drawCharts(result_count,"ceasar",type1,1);
-    result_count++;
+    if(flag==1){
+        printText("Ceasar cipher",1);
+        for(int i=1;i<26;i++){
+            result = ceasar_cipher(input,i);
+            printText(result,2);
+            //qDebug()<<result;
+        }
+        drawCharts(result_count,"ceasar",type1,1);
+        result_count++;
+    }
+    else{
+        printText("非ceasar",1);
+    }
 
     //XXencode 字母数字+-
     flag = 0;

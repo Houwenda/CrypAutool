@@ -28,7 +28,6 @@ SOURCES += \
         mainwindow.cpp \
     algorithm.cpp
 
-
 HEADERS += \
         mainwindow.h
 

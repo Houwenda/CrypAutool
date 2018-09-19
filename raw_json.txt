@@ -80,6 +80,10 @@
     {
       "name": "Polybius",
       "keyword": {}
+    },
+    {
+      "name": "Fence cipher",
+      "keyword": {}
     }
   ],
   "nodes": [

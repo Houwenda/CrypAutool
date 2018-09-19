@@ -1,7 +1,6 @@
 #include <cmath>
 #include <QDebug>
 #include <QString>
-
 //char转ascii
 QString char_to_ascii(char x){
     int n = x;
@@ -609,4 +608,31 @@ QString md5BruteForce(QString input){
         qDebug()<<"16位md5"<<input<<endl;
     }
     return "";
+}
+
+//栅栏密码
+QString zhalan(char *cipher) {
+    int len=strlen(cipher);
+    int a[10];
+    for(int i=0; i<10; i++) a[i] = 0;
+    int k=0;
+    for(int i=2; i<len; i++) {
+        if(len%i==0) {
+            a[k]=i;
+            k++;
+        }
+    }
+    QString result = "";
+    for(int i=0; a[i]!=0&&i<10; i++) {
+        for(int k=0; k<len; k++) {
+            if((k+1)%a[i]==0){
+                result += cipher[k];
+                result += '\n';
+            }
+
+            else result+=cipher[k];
+        }
+        result.append("\n");
+    }
+    return result;
 }

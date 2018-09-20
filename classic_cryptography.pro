@@ -26,10 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    algorithm.cpp
+    algorithm.cpp \
+    cipher.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    cipher.h
 
 FORMS += \
         mainwindow.ui

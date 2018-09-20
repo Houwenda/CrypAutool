@@ -1,6 +1,11 @@
 #include <cmath>
 #include <QDebug>
 #include <QString>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
+#include <QtSql/QSqlQuery>
+#include <QCryptographicHash>
+
 //char转ascii
 QString char_to_ascii(char x){
     int n = x;
@@ -167,6 +172,12 @@ QString encrypt5(char* str)
     int num=0;
     for(int i=0;i<len;i+=2)
     {
+        if(str[i]==' '){
+            i--;
+            a[num] = 20;
+            num++;
+            continue;
+        }
         int n=0;
         n=(str[i]-'0')*10;
         n+=str[i+1]-'0';
@@ -194,6 +205,9 @@ QString encrypt5(char* str)
         if(a[i]==15)
         {
             b[i]='E';
+        }
+        if(a[i]==20){
+            b[i] = ' ';
         }
         if(a[i]==21)
         {
@@ -601,12 +615,348 @@ QString decrypt12(QString cipher)
 QString md5BruteForce(QString input){
     if(input.length()==32){
         //截取16位md5
-        input = input.mid(9,16);
-        qDebug()<<"32位md5"<<input<<endl;
+        input = input.mid(8,16);
+        //qDebug()<<"32位md5"<<input<<endl;
     }
     else{
-        qDebug()<<"16位md5"<<input<<endl;
+        //qDebug()<<"16位md5"<<input<<endl;
     }
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Md5);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                strMD5 = strMD5.mid(8,16);
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
+    return "";
+}
+
+//sha1爆破
+QString sha1BruteForce(QString input){
+
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha1);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
+    return "";
+}
+
+//sha224爆破
+QString sha224BruteForce(QString input){
+
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha224);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
+    return "";
+}
+//sha256爆破
+QString sha256BruteForce(QString input){
+
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha256);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
+    return "";
+}
+
+//sha384
+QString sha384BruteForce(QString input){
+
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha384);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
+    return "";
+}
+
+//sha512
+QString sha512BruteForce(QString input){
+
+    QSqlDatabase database;
+    if (QSqlDatabase::contains("qt_sql_default_connection"))
+    {
+        database = QSqlDatabase::database("qt_sql_default_connection");
+    }
+    else
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE");
+        database.setDatabaseName("MyDataBase.db");
+    }
+
+    if (!database.open())
+    {
+        qDebug() << "Error: Failed to connect database." << database.lastError();
+    }
+    else
+    {
+        qDebug()<<"open database succeeded"<<endl;
+    }
+
+    //QSqlQuery sql_query;
+    QSqlQuery sql_query;
+    QString select_sql = "select id,password from passwd";
+    sql_query.prepare(select_sql);
+    if(!sql_query.exec(select_sql)){
+        qDebug()<<sql_query.lastError();
+    }
+    else{
+        qDebug()<<"start Bruteforce";
+        while(sql_query.next())
+            {
+                int id = sql_query.value(0).toInt();
+                QString password = sql_query.value(1).toString();
+                password = password.mid(0,password.length()-1);
+                //qDebug()<<password;
+                //qDebug()<<QString("id:%1    password:%2").arg(id).arg(password);
+                QByteArray byteArray;
+                byteArray.append(password);
+                QByteArray hash = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha512);
+                QString strMD5 = hash.toHex();
+                //qDebug()<<strMD5;
+                if(strMD5==input){
+                    database.close();
+                    return password;
+                }
+        }
+
+    }
+
+    database.close();
+
     return "";
 }
 

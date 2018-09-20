@@ -11,6 +11,13 @@ extern int base16_decode(const char * base16, unsigned char * dedata);
 extern QString decrypt3(QString input);
 extern QString encrypt5(char* str);
 extern QString zhalan(char *cipher);
+extern QString md5BruteForce(QString input);
+QString sha1BruteForce(QString input);
+QString sha224BruteForce(QString input);
+QString sha256BruteForce(QString input);
+QString sha384BruteForce(QString input);
+QString sha512BruteForce(QString input);
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -67,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         qDebug()<<"open database succeeded"<<endl;
     }
+    //database.close();
 
     //drawCharts函数测试
     //drawCharts(0," ",0,0);
@@ -266,6 +274,7 @@ void MainWindow::requestBrainfuck(QString input){
 
     //QNetworkAccessManager manager();
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    manager->proxyFactory()->setUseSystemConfiguration(true);
     connect(manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(replyFinished1(QNetworkReply *)));
 
     manager->post(request,postData);
@@ -398,43 +407,78 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //长度检测
     //sha256
     if(input.length()==64){
-        printText("sha256",1);       
+        printText("sha256",1);
+        if(recurse_count==0){
+            result = sha256BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"sha256",type1,8);
         result_count++;
     }
     //md5(32)
     else if(input.length()==32){
         printText("md5",1);
+        if(recurse_count==0){
+            result = md5BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"md5",type1,5);
         result_count++;
     }
     //md5(16)
     else if(input.length()==16){
         printText("md5",1);
+        if(recurse_count==0){
+            result = md5BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"md5",type1,5);
         result_count++;
     }
     //sha1
     else if(input.length()==40){
         printText("sha1",1);
+        if(recurse_count==0){
+            result = sha1BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"sha1",type1,6);
         result_count++;
     }
     //sha244
     else if(input.length()==56){
         printText("sha244",1);
+        if(recurse_count==0){
+            result = sha224BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"sha244",type1,7);
         result_count++;
     }
     //sha384
     else if(input.length()==96){
         printText("sha384",1);
+        if(recurse_count==0){
+            result = sha384BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"sha384",type1,9);
         result_count++;
     }
     //sha512
     else if(input.length()==128){
         printText("sha512",1);
+        if(recurse_count==0){
+            result = sha512BruteForce(input);
+            //qDebug()<<result;
+            printText(result,2);
+        }
         drawCharts(result_count,"sha512",type1,10);
         result_count++;
     }
@@ -520,7 +564,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
 
     //base32
     int i;
-    for(i=0;i<input.length()-1;i++){
+    for(i=0;i<input.length();i++){
         if((input[i]>='A'&&input[i]<='Z')||(input[i]>='2'&&input[i]<='7')){}
         else{
             break;
@@ -535,6 +579,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
                 break;
             }
         }
+        //qDebug()<<"flag"<<flag;
         if(flag==0){
             printText("base32",1);
             char* base32 = input.toLatin1().data();
@@ -620,8 +665,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
             count++;
         }
     }
-    qDebug()<<"count:"<<count;
-    if(count>=input.length()/7.0){
+    if(count>=input.length()/8.0){
         printText("unicode",1);
         result = decrypt12(input);
         QFile file("result.txt");
@@ -742,7 +786,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     result = zhalan(input.toLatin1().data());
     //qDebug()<<result;
     QFile file("fence.txt");
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text| QIODevice::Append)){
         qDebug()<<"Open failed"<< endl;
     }
     QTextStream out(&file);
@@ -755,7 +799,7 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     //polybius
     flag = 0;
     for(int i=0;i<input.length();i++){
-        if(input[i]>-'0'&&input[i]<='9'){}
+        if(input[i]>='1'&&input[i]<='5'||input[i]==' '){}
         else{
             flag = 1;
             break;
@@ -764,9 +808,13 @@ void MainWindow::staticsAnalysis(QString input,int recurse_count, int type1){
     if(flag==0){
         char* in = input.toLatin1().data();
         result = encrypt5(in);
+        printText("polybius",1);
         printText(result,2);
         drawCharts(result_count,"polybius",type1,18);
         result_count++;
+    }
+    else{
+        printText("非polybius",1);
     }
 
     //ceasar
@@ -834,11 +882,11 @@ void MainWindow::on_pushButton_clicked()
     QTextStream out(&file1);
     out<<raw;
     file1.close();
-    //忽略空输入
-    if(ui->lineEdit->text().length()==0) return;
     //清空输出
     ui->textEdit->clear();
     ui->textEdit_2->clear();
+    //忽略空输入
+    if(ui->lineEdit->text().length()==0) return;
     //quipquip
     if(requestQuipquip())   qDebug()<<"quipquip analysis"<<endl;
     //特征检测
